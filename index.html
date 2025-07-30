@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reaction Time Test</title>
+<style>
+  body { margin:0; font-family: Arial, Helvetica, sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; background:#f0f0f0; }
+  h1 { margin-bottom:0.5em; }
+  #startBtn, #againBtn { font-size:1.2rem; padding:0.7rem 1.2rem; }
+  #display { width:80vw; max-width:400px; height:200px; margin-top:1em; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:2rem; cursor:pointer; }
+</style>
+</head>
+<body>
+<h1>Reaction Time Test</h1>
+<p id="instructions">Click start and wait for green. Then tap as fast as you can!</p>
+<button id="startBtn">Start</button>
+<div id="display" hidden>Wait...</div>
+<button id="againBtn" hidden>Try again</button>
+<script>
+const startBtn = document.getElementById('startBtn');
+const display = document.getElementById('display');
+const againBtn = document.getElementById('againBtn');
+const instructions = document.getElementById('instructions');
+let startTime, timeoutId;
+
+function reset() {
+  startBtn.hidden = false;
+  display.hidden = true;
+  display.style.background = '#ddd';
+  display.textContent = 'Wait...';
+  againBtn.hidden = true;
+  instructions.textContent = 'Click start and wait for green. Then tap as fast as you can!';
+}
+
+startBtn.addEventListener('click', () => {
+  startBtn.hidden = true;
+  instructions.textContent = 'Get ready...';
+  display.hidden = false;
+  timeoutId = setTimeout(() => {
+    display.style.background = '#4caf50';
+    display.textContent = 'TAP!';
+    startTime = performance.now();
+  }, Math.random() * 3000 + 2000); // 2-5 seconds
+});
+
+display.addEventListener('click', () => {
+  if (startTime) {
+    const reaction = performance.now() - startTime;
+    display.textContent = `Your time: ${reaction.toFixed(0)} ms`;
+    display.style.background = '#2196f3';
+    againBtn.hidden = false;
+    startTime = null;
+  } else if (!display.hidden) {
+    clearTimeout(timeoutId);
+    instructions.textContent = 'Too soon! Try again.';
+    againBtn.hidden = false;
+  }
+});
+
+againBtn.addEventListener('click', reset);
+</script>
+</body>
+</html>
